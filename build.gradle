@@ -51,10 +51,22 @@ dependencies {
 
 }
 
+task copyPrivate(type: Copy) {
+    copy {
+        from './config-repo'
+        include "application.yml"
+        into 'src/main/resources'
+    }
+}
+
 tasks.named('bootBuildImage') {
     builder = 'paketobuildpacks/builder-jammy-base:latest'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+tasks.named('build').configure {
+    dependsOn(copyPrivate)
 }

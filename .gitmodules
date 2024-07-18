@@ -1,0 +1,3 @@
+[submodule "config-repo"]
+	path = config-repo
+	url = https://github.com/BearMurdererMulti/config-repo.git
