@@ -37,8 +37,8 @@ jobs:
       - name: Docker build & push to docker repo
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -f Dockerfile -t ${{ secrets.DOCKER_REPO }}/directors-dev .
-          docker push ${{ secrets.DOCKER_REPO }}/directors-dev
+          docker build -f Dockerfile -t ${{ secrets.DOCKER_REPO }}/bearmurderer-multi .
+          docker push ${{ secrets.DOCKER_REPO }}/bearmurderer-multi
 
       - name: Deploy to server
         uses: appleboy/ssh-action@master
@@ -51,6 +51,6 @@ jobs:
           script: |
             sudo docker stop bearmurderer-multi
             sudo docker rm bearmurderer-multi
-            sudo docker pull ${{ secrets.EC2_DOCKER_REPO }}/directors-dev
-            sudo docker run --name bearmurderer-multi -d -p 8081:8081 -e gummymurderer/bearmurderer-multi
+            sudo docker pull ${{ secrets.EC2_DOCKER_REPO }}/bearmurderer-multi
+            sudo docker run --name bearmurderer-multi -d -p 8081:8081 gummymurderer/bearmurderer-multi
             sudo docker image prune -f
