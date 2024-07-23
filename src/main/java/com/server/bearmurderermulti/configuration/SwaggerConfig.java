@@ -13,8 +13,8 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Collections;
 
 @OpenAPIDefinition(
-        info = @Info(title = "Gummy Murderer App",
-                description = "gummy murderer app api명세",
+        info = @Info(title = "Bear Murderer-Multi App",
+                description = "Bear Murderer-Multi App api명세",
                 version = "v1"))
 @RequiredArgsConstructor
 @Configuration
