@@ -38,12 +38,6 @@ public class SignController {
         return Response.success(response);
     }
 
-    @PostMapping(value = "/check-email")
-    public Response<DuplicatedResponse> checkEmail(@RequestBody DuplicatedEmailRequest request) {
-        DuplicatedResponse response = memberService.duplicateCheckEmail(request);
-        return Response.success(response);
-    }
-
     @PostMapping(value = "/check-nickname")
     public Response<DuplicatedResponse> checkNickname(@RequestBody DuplicatedNicknameRequest request) {
         DuplicatedResponse response = memberService.duplicateCheckNickname(request);
