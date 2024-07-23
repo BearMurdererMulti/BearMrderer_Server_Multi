@@ -54,3 +54,5 @@ jobs:
             sudo docker pull ${{ secrets.EC2_DOCKER_REPO }}/bearmurderer-multi
             sudo docker run --name bearmurderer-multi -d -p 8081:8081 gummymurderer/bearmurderer-multi
             sudo docker image prune -f
+            sleep 10
+            sudo docker logs bearmurderer-multi
