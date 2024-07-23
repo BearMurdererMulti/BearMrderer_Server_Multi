@@ -52,7 +52,11 @@ jobs:
             sudo docker stop bearmurderer-multi
             sudo docker rm bearmurderer-multi
             sudo docker pull ${{ secrets.EC2_DOCKER_REPO }}/bearmurderer-multi
-            sudo docker run --name bearmurderer-multi -d -p 8081:8081 gummymurderer/bearmurderer-multi
+            sudo docker run --name bearmurderer-multi -d --network host -p 8081:8081 
+              -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}
+              -e SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}
+              -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+              gummymurderer/bearmurderer-multi
             sudo docker image prune -f
             sleep 10
             sudo docker logs bearmurderer-multi
