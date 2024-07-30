@@ -11,6 +11,7 @@ import com.server.bearmurderermulti.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +21,10 @@ public class GameRoomService {
     private final GameRoomRepository gameRoomRepository;
     private final MemberRepository memberRepository;
 
+    @Transactional
     public GameRoomSaveResponse createGameRoom(GameRoomSaveRequest request) {
+
+        log.info("🐻GameRoom 저장 시작");
 
         Member creator = memberRepository.findByNickname(request.getCreatorNickname())
                 .orElseThrow(() -> new AppException(ErrorCode.INVALID_NICKNAME));
@@ -30,6 +34,8 @@ public class GameRoomService {
 
         GameRoom gameRoom = request.toEntity(creator, participant);
         GameRoom savedGameRoom = gameRoomRepository.save(gameRoom);
+
+        log.info("🐻GameRoom 저장 완료");
 
         return new GameRoomSaveResponse(savedGameRoom);
 
