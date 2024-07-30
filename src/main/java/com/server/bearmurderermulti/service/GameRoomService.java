@@ -26,11 +26,16 @@ public class GameRoomService {
 
         log.info("🐻GameRoom 저장 시작");
 
+        log.info("🐻Request Data: {}", request);
+
         Member creator = memberRepository.findByNickname(request.getCreatorNickname())
                 .orElseThrow(() -> new AppException(ErrorCode.INVALID_NICKNAME));
 
         Member participant = memberRepository.findByNickname(request.getParticipantNickname())
                 .orElseThrow(() -> new AppException(ErrorCode.INVALID_NICKNAME));
+
+        log.info("🐻Creator found: {}", creator.getNickname());
+        log.info("🐻Participant found: {}", participant.getNickname());
 
         GameRoom gameRoom = request.toEntity(creator, participant);
         GameRoom savedGameRoom = gameRoomRepository.save(gameRoom);
