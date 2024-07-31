@@ -60,7 +60,7 @@ public class ScenarioService {
         String previousStory = foundGameSet.getGameSummary();
         log.info("🤖 previousStory : {} ", previousStory);
 
-        String url =  aiUrl + "/api/scenario/generate_victim";
+        String url =  aiUrl + "/api/v1/scenario/scenarios/victim";
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());
@@ -139,7 +139,7 @@ public class ScenarioService {
         GameSet foundGameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
-        String url = aiUrl + "/api/scenario/generate_intro";
+        String url = aiUrl + "/api/v1/scenario/scenarios/intro";
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());
@@ -201,7 +201,7 @@ public class ScenarioService {
         // livingCharacters 정보 가져오기
         List<NpcInfo> livingCharacters = gameNpcRepository.findAllAliveResidentNpcInfoByGameSetNo(foundGameSet.getGameSetNo());
 
-        String url = aiUrl + "/api/scenario/generate_final_words";
+        String url = aiUrl + "/api/v1/scenario/scenarios/final-words";
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());
