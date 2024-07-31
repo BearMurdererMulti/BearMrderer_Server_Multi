@@ -23,7 +23,7 @@ public class QuestionCreateDTO {
                 .keyWord(request.getKeyWord())
                 .keyWordType(KeyWordType.valueOf(request.getKeyWordType().toUpperCase()))
                 .gameSet(gameSet)
-                .questionNumber(dto.getNumber())
+                .questionIndex(dto.getNumber())
                 .questionText(dto.getQuestion())
                 .build();
     }

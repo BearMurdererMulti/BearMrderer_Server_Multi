@@ -10,7 +10,7 @@ import lombok.*;
 @Builder
 @Getter
 @Table(name = "question_tb")
-public class Question {
+public class Question extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,8 +24,8 @@ public class Question {
     @Enumerated(EnumType.STRING)
     private KeyWordType keyWordType;
 
-    @Column(name = "question_number")
-    private Integer questionNumber;
+    @Column(name = "question_index")
+    private Integer questionIndex;
 
     @Column(name = "question_text")
     private String questionText;

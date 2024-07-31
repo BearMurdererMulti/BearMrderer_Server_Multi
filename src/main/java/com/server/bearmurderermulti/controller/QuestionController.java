@@ -1,5 +1,7 @@
 package com.server.bearmurderermulti.controller;
 
+import com.server.bearmurderermulti.domain.dto.question.QuestionAnswerRequest;
+import com.server.bearmurderermulti.domain.dto.question.QuestionAnswerResponse;
 import com.server.bearmurderermulti.domain.dto.question.QuestionCreateRequest;
 import com.server.bearmurderermulti.domain.dto.question.QuestionCreateResponse;
 import com.server.bearmurderermulti.domain.entity.Member;
@@ -31,5 +33,14 @@ public class QuestionController {
         QuestionCreateResponse response = questionService.createQuestion(loginMember, request, httpServletRequest);
         return Response.success(response);
 
+    }
+
+    @PostMapping("/answer")
+    public Response<QuestionAnswerResponse> answerQuestion(@RequestBody QuestionAnswerRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails, HttpServletRequest httpServletRequest) {
+
+        Member loginMember = customUserDetails.getMember();
+
+        QuestionAnswerResponse response = questionService.getAnswer(loginMember, request, httpServletRequest);
+        return Response.success(response);
     }
 }
