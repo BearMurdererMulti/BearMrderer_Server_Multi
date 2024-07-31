@@ -160,9 +160,37 @@ public class GameService {
 
         gameNpcRepository.saveAll(gameNpcList);
 
+        // AI 서버에 요청 보내기
+        sendGameStartToAI(savedGameSet.getGameSetNo());
+
         return StartGameResponse.builder()
                 .gameSetNo(savedGameSet.getGameSetNo())
                 .build();
+    }
+
+    private void sendGameStartToAI(Long gameNo) {
+
+        String aiServerUrl = aiUrl + "/api/v2/new-game/start";
+        WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
+
+        // ai 요청 본문 생성
+        StartGameAIRequest request = StartGameAIRequest.create(gameNo, "ko");
+
+        // 요청 보내기
+        StartGameAIResponse response = webClient.post()
+                .uri(aiServerUrl)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(request))
+                .retrieve()
+                .bodyToMono(StartGameAIResponse.class)
+                .block();
+
+        // 응답 log
+        if (response != null) {
+            log.info("🐻 AI 서버 응답 : {}", response.getMessage());
+        } else {
+            log.error("🐻 AI 서버가 응답이 없습니다.");
+        }
     }
 
     @Transactional
