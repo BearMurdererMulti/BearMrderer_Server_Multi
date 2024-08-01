@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AIQuestionAnswerRequest {
 
-    private Long gameNo;
+    private int gameNo;
     private String npcName;
     private Integer questionIndex;
     private String keyword;

@@ -95,9 +95,11 @@ public class QuestionService {
         GameSet gameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo())
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
+        int gameNo = Math.toIntExact(request.getGameSetNo());
+
         // AI 서버에 보낼 요청 객체 생성
         AIQuestionCreateRequest aiQuestionSaveRequest = new AIQuestionCreateRequest();
-        aiQuestionSaveRequest.setGameNo(request.getGameSetNo());
+        aiQuestionSaveRequest.setGameNo(gameNo);
         aiQuestionSaveRequest.setNpcName(request.getNpcName());
         aiQuestionSaveRequest.setKeyWord(request.getKeyWord() != null ? request.getKeyWord() : "");
         aiQuestionSaveRequest.setKeyWordType(request.getKeyWordType() != null ? request.getKeyWordType() : "");
@@ -188,9 +190,11 @@ public class QuestionService {
         GameSet gameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo())
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
+        int gameNo = Math.toIntExact(request.getGameSetNo());
+
         // AI 서버에 보낼 요청 객체 생성
         AIQuestionAnswerRequest aiQuestionAnswerRequest = new AIQuestionAnswerRequest();
-        aiQuestionAnswerRequest.setGameNo(request.getGameSetNo());
+        aiQuestionAnswerRequest.setGameNo(gameNo);
         aiQuestionAnswerRequest.setNpcName(request.getNpcName());
         aiQuestionAnswerRequest.setQuestionIndex(request.getQuestionIndex());
         aiQuestionAnswerRequest.setKeyword(request.getKeyword() != null ? request.getKeyword() : "");

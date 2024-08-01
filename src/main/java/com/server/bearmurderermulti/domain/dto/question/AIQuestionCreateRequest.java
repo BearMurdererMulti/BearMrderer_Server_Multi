@@ -11,17 +11,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AIQuestionCreateRequest {
 
-    private Long gameNo;
+    private int gameNo;
     private String npcName;
     private String keyWord;
     private String keyWordType;
 
-    public static AIQuestionCreateRequest from(QuestionCreateRequest request) {
-        return new AIQuestionCreateRequest(
-                request.getGameSetNo(),
-                request.getNpcName(),
-                request.getKeyWord(),
-                request.getKeyWordType()
-        );
-    }
 }
