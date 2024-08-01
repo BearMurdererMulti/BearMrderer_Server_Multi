@@ -197,8 +197,8 @@ public class QuestionService {
         aiQuestionAnswerRequest.setGameNo(request.getGameSetNo());
         aiQuestionAnswerRequest.setNpcName(request.getNpcName());
         aiQuestionAnswerRequest.setQuestionIndex(request.getQuestionIndex());
-        aiQuestionAnswerRequest.setKeyWord(request.getKeyword() != null ? request.getKeyword() : "");
-        aiQuestionAnswerRequest.setKeyWordType(request.getKeywordType() != null ? request.getKeywordType() : "");
+        aiQuestionAnswerRequest.setKeyWord(request.getKeyWord() != null ? request.getKeyWord() : "");
+        aiQuestionAnswerRequest.setKeyWordType(request.getKeyWord() != null ? request.getKeyWordType() : "");
 
         // 요청 객체 로그 출력
         log.info("🐻Sending request to AI server: {}", aiQuestionAnswerRequest);

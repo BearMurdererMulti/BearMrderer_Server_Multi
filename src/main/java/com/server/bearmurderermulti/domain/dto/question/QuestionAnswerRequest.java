@@ -16,8 +16,8 @@ public class QuestionAnswerRequest {
     private Long gameSetNo;
     private String npcName;
     private Integer questionIndex;
-    private String keyword;
-    private String keywordType;
+    private String keyWord = "";
+    private String keyWordType = "";
 
     public QuestionAnswer toEntity(Question question, String answerText) {
         return QuestionAnswer.builder()

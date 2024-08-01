@@ -11,7 +11,7 @@ public class AIQuestionCreateRequest {
 
     private Long gameNo;
     private String npcName;
-    private String keyWord;
-    private String keyWordType;
+    private String keyWord = "";
+    private String keyWordType = "";
 
 }
