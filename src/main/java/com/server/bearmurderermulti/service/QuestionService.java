@@ -89,24 +89,26 @@ public class QuestionService {
 
         log.info("🐻Question Create AI 통신 시작");
 
-        String aiServerUrl = aiUrl + "/api/v2/in-game/generate-questions";
-        WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
+        // AI 서버 URL의 base 부분만 설정
+        String baseUrl = "https://7bc4-222-101-241-56.ngrok-free.app";
+        WebClient webClient = WebClient.builder().baseUrl(baseUrl).build();
 
         GameSet gameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo())
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
-        int gameNo = Math.toIntExact(request.getGameSetNo());
-
         // AI 서버에 보낼 요청 객체 생성
         AIQuestionCreateRequest aiQuestionSaveRequest = new AIQuestionCreateRequest();
-        aiQuestionSaveRequest.setGameNo(gameNo);
+        aiQuestionSaveRequest.setGameNo(request.getGameSetNo());
         aiQuestionSaveRequest.setNpcName(request.getNpcName());
         aiQuestionSaveRequest.setKeyWord(request.getKeyWord() != null ? request.getKeyWord() : "");
         aiQuestionSaveRequest.setKeyWordType(request.getKeyWordType() != null ? request.getKeyWordType() : "");
 
+        // 요청 객체 로그 출력
+        log.info("🐻Sending request to AI server: {}", aiQuestionSaveRequest);
+
         // AI 서버로 요청
         QuestionCreateResponse response = webClient.post()
-                .uri(aiServerUrl)
+                .uri("/api/v2/in-game/generate-questions")
                 .bodyValue(aiQuestionSaveRequest)
                 .retrieve()
                 .bodyToMono(QuestionCreateResponse.class)
@@ -184,25 +186,26 @@ public class QuestionService {
 
         log.info("🐻Question Answer AI 통신 시작");
 
-        String aiServerUrl = aiUrl + "/api/v2/in-game/generate-answer";
-        WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
+        String baseUrl = "https://7bc4-222-101-241-56.ngrok-free.app";
+        WebClient webClient = WebClient.builder().baseUrl(baseUrl).build();
 
         GameSet gameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo())
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
-        int gameNo = Math.toIntExact(request.getGameSetNo());
-
         // AI 서버에 보낼 요청 객체 생성
         AIQuestionAnswerRequest aiQuestionAnswerRequest = new AIQuestionAnswerRequest();
-        aiQuestionAnswerRequest.setGameNo(gameNo);
+        aiQuestionAnswerRequest.setGameNo(request.getGameSetNo());
         aiQuestionAnswerRequest.setNpcName(request.getNpcName());
         aiQuestionAnswerRequest.setQuestionIndex(request.getQuestionIndex());
-        aiQuestionAnswerRequest.setKeyword(request.getKeyword() != null ? request.getKeyword() : "");
-        aiQuestionAnswerRequest.setKeywordType(request.getKeywordType() != null ? request.getKeywordType() : "");
+        aiQuestionAnswerRequest.setKeyWord(request.getKeyword() != null ? request.getKeyword() : "");
+        aiQuestionAnswerRequest.setKeyWordType(request.getKeywordType() != null ? request.getKeywordType() : "");
+
+        // 요청 객체 로그 출력
+        log.info("🐻Sending request to AI server: {}", aiQuestionAnswerRequest);
 
         // AI 서버로 요청
         QuestionAnswerResponse aiResponse = webClient.post()
-                .uri(aiServerUrl)
+                .uri("/api/v2/in-game/generate-answer")
                 .bodyValue(aiQuestionAnswerRequest)
                 .retrieve()
                 .bodyToMono(QuestionAnswerResponse.class)
