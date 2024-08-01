@@ -32,6 +32,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -161,24 +162,32 @@ public class GameService {
         gameNpcRepository.saveAll(gameNpcList);
 
         // AI 서버에 요청 보내기
-        sendGameStartToAI(savedGameSet.getGameSetNo());
+        sendGameStartToAI(savedGameSet.getGameSetNo(), gameNpcList);
 
         return StartGameResponse.builder()
                 .gameSetNo(savedGameSet.getGameSetNo())
                 .build();
     }
 
-    private void sendGameStartToAI(Long gameNo) {
+    private void sendGameStartToAI(Long gameNo, List<GameNpc> gameNpcList) {
 
-        String aiServerUrl = aiUrl + "/api/v2/new-game/start";
-        WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
+        String baseUrl = "https://7bc4-222-101-241-56.ngrok-free.app";
+        WebClient webClient = WebClient.builder().baseUrl(baseUrl).build();
+
+        // NPC 리스트 생성
+        List<GameNpcInfo> npcInfoList = gameNpcList.stream()
+                .map(gameNpc -> GameNpcInfo.builder()
+                        .npcName(gameNpc.getNpcName())
+                        .npcJob(gameNpc.getNpcJob())
+                        .build())
+                .toList();
 
         // ai 요청 본문 생성
-        StartGameAIRequest request = StartGameAIRequest.create(gameNo, "ko");
+        StartGameAIRequest request = StartGameAIRequest.create(gameNo, "ko", npcInfoList);
 
         // 요청 보내기
         StartGameAIResponse response = webClient.post()
-                .uri(aiServerUrl)
+                .uri("/api/v2/new-game/start")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
