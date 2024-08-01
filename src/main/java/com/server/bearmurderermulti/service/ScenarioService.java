@@ -50,6 +50,9 @@ public class ScenarioService {
         GameSet foundGameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
+        String secretKey = "mafia";
+        request.setSecretKey(secretKey);
+
         // AI에게 시나리오 생성 요청보내는 로직
         List<NpcInfo> aliveGameNpcList = gameNpcRepository.findAllAliveResidentNpcInfoByGameSetNo(foundGameSet.getGameSetNo());
         String murderName = gameNpcRepository.findMurderByGameSetNo(foundGameSet.getGameSetNo());
@@ -141,6 +144,9 @@ public class ScenarioService {
 
         String url = aiUrl + "/api/v1/scenario/intro";
 
+        String secretKey = "mafia";
+        request.setSecretKey(secretKey);
+
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());
         requestData.put("secretKey", request.getSecretKey());
@@ -178,6 +184,9 @@ public class ScenarioService {
         // 일치하는 게임이 없을 경우 에러 발생
         GameSet foundGameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
+
+        String secretKey = "mafia";
+        request.setSecretKey(secretKey);
 
         // gameResult 정보 가져오기
         String gameResult = null;

@@ -78,6 +78,9 @@ public class ChatService {
 
         GameSet gameSet = optionalGameSet.get();
 
+        String secretKey = "mafia";
+        request.setSecretKey(secretKey);
+
         request.setSender(loginMember.getNickname());
 
         Chat chat = ChatSaveRequest.toEntity(request, LocalDateTime.now(), ChatRoleType.USER, ChatRoleType.AI, gameSet);
@@ -219,6 +222,9 @@ public class ChatService {
         }
 
         GameSet gameSet = optionalGameSet.get();
+
+        String secretKey = "mafia";
+        npcChatRequest.setSecretKey(secretKey);
 
         npcChatRequest.setSender(loginMember.getNickname());
 
