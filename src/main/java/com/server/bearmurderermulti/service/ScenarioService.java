@@ -142,15 +142,10 @@ public class ScenarioService {
         GameSet foundGameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
-        String url = aiUrl + "/api/v1/scenario/intro";
-
-        String secretKey = "mafia";
-        request.setSecretKey(secretKey);
+        String url = aiUrl + "/api/v2/new-game/generate-chief-letter";
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());
-        requestData.put("secretKey", request.getSecretKey());
-        requestData.put("characters", request.getCharacters());
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -243,12 +238,30 @@ public class ScenarioService {
     }
 
     @Transactional
-    public IntroAndScenarioResponse makeIntroAndScenario (IntroRequest introRequest, MakeScenarioRequest makeScenarioRequest,  Member loginMember) throws JsonProcessingException {
+    public IntroAndScenarioResponse makeIntroAndScenario (IntroRequest introRequest, Member loginMember) throws JsonProcessingException {
 
         IntroAnswerDTO introAnswerDTO = intro(introRequest, loginMember);
-        MakeScenarioResponse makeScenarioResponse = makeScenario(makeScenarioRequest, loginMember);
 
-        return new IntroAndScenarioResponse(introAnswerDTO, makeScenarioResponse);
+        // 일치하는 게임이 없을경우 에러 발생
+        GameSet foundGameSet = gameSetRepository.findByGameSetNoAndMember(introRequest.getGameSetNo(), loginMember)
+                .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
+
+        GameScenario gameScenario = gameScenarioRepository.findByGameSet_GameSetNo(introRequest.getGameSetNo())
+                .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
+
+        // 해당 게임의 npc list
+        List<GameNpc> gameNpcs = gameNpcRepository.findAllByGameSet(foundGameSet);
+
+        List<GameNpcDTO> npcList = new ArrayList<>();
+        for (GameNpc gameNpc : gameNpcs) {
+            GameNpcDTO dto = new GameNpcDTO(gameNpc);
+            npcList.add(dto);
+        }
+
+        // FirstScenarioResponse 객체 생성
+        FirstScenarioResponse firstScenarioResponse = FirstScenarioResponse.of(gameScenario, npcList);
+
+        return new IntroAndScenarioResponse(introAnswerDTO, firstScenarioResponse);
 
     }
 

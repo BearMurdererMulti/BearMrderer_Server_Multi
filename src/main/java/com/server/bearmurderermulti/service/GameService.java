@@ -186,20 +186,36 @@ public class GameService {
         StartGameAIRequest request = StartGameAIRequest.create(gameNo, "ko", npcInfoList);
 
         // 요청 보내기
-        StartGameAIResponse response = webClient.post()
+        AIResponse response = webClient.post()
                 .uri(aiServerUrl)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
-                .bodyToMono(StartGameAIResponse.class)
+                .bodyToMono(AIResponse.class)
                 .block();
 
-        // 응답 log
+        // 응답 처리
         if (response != null) {
-            log.info("🐻 AI 서버 응답 : {}", response.getMessage());
+            log.info("🐻 AI 서버 응답 : {}", response.getAnswer().toString());
+            GameSet gameSet = gameSetRepository.findById(gameNo).orElseThrow();
+            GameScenario gameScenario = response.toEntity(gameSet);
+            gameScenarioRepository.save(gameScenario);
+
+            // 피해자 상태 DEAD로 업데이트
+            updateVictimStatus(gameNo, response.getAnswer().getVictim(), response.getAnswer().getCrimeScene());
         } else {
             log.error("🐻 AI 서버가 응답이 없습니다.");
         }
+    }
+
+    private void updateVictimStatus(Long gameNo, String victimName, String crimeScene) {
+
+        GameNpc victimNpc = gameNpcRepository.findByGameSet_GameSetNoAndNpcName(gameNo, victimName)
+                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+
+        victimNpc.markDeath(crimeScene);
+
+        gameNpcRepository.save(victimNpc);
     }
 
     @Transactional
