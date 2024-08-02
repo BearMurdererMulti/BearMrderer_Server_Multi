@@ -90,8 +90,8 @@ public class QuestionService {
         log.info("🐻Question Create AI 통신 시작");
 
         // AI 서버 URL의 base 부분만 설정
-        String baseUrl = "https://7bc4-222-101-241-56.ngrok-free.app";
-        WebClient webClient = WebClient.builder().baseUrl(baseUrl).build();
+        String aiServerUrl = aiUrl + "/api/v2/in-game/generate-questions";
+        WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
 
         GameSet gameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo())
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
@@ -108,7 +108,7 @@ public class QuestionService {
 
         // AI 서버로 요청
         QuestionCreateResponse response = webClient.post()
-                .uri("/api/v2/in-game/generate-questions")
+                .uri(aiServerUrl)
                 .bodyValue(aiQuestionSaveRequest)
                 .retrieve()
                 .bodyToMono(QuestionCreateResponse.class)
@@ -186,8 +186,8 @@ public class QuestionService {
 
         log.info("🐻Question Answer AI 통신 시작");
 
-        String baseUrl = "https://7bc4-222-101-241-56.ngrok-free.app";
-        WebClient webClient = WebClient.builder().baseUrl(baseUrl).build();
+        String aiServerUrl = aiUrl + "/api/v2/in-game/generate-answer";
+        WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
 
         GameSet gameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo())
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
@@ -205,7 +205,7 @@ public class QuestionService {
 
         // AI 서버로 요청
         QuestionAnswerResponse aiResponse = webClient.post()
-                .uri("/api/v2/in-game/generate-answer")
+                .uri(aiServerUrl)
                 .bodyValue(aiQuestionAnswerRequest)
                 .retrieve()
                 .bodyToMono(QuestionAnswerResponse.class)

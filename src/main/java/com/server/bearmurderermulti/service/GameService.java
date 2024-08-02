@@ -171,8 +171,8 @@ public class GameService {
 
     private void sendGameStartToAI(Long gameNo, List<GameNpc> gameNpcList) {
 
-        String baseUrl = "https://7bc4-222-101-241-56.ngrok-free.app";
-        WebClient webClient = WebClient.builder().baseUrl(baseUrl).build();
+        String aiServerUrl = aiUrl + "/api/v2/new-game/start";
+        WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
 
         // NPC 리스트 생성
         List<GameNpcInfo> npcInfoList = gameNpcList.stream()
@@ -187,7 +187,7 @@ public class GameService {
 
         // 요청 보내기
         StartGameAIResponse response = webClient.post()
-                .uri("/api/v2/new-game/start")
+                .uri(aiServerUrl)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
