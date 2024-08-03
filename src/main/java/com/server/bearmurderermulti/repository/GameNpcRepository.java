@@ -1,5 +1,6 @@
 package com.server.bearmurderermulti.repository;
 
+import com.server.bearmurderermulti.domain.dto.scenario.LivingCharacters;
 import com.server.bearmurderermulti.domain.dto.scenario.NpcInfo;
 import com.server.bearmurderermulti.domain.entity.GameNpc;
 import com.server.bearmurderermulti.domain.entity.GameSet;
@@ -20,6 +21,9 @@ public interface GameNpcRepository extends JpaRepository<GameNpc, Long> {
 
     @Query("SELECT new com.server.bearmurderermulti.domain.dto.scenario.NpcInfo(n.npcName, n.gameNpcNo) FROM GameNpc n WHERE n.gameSet.gameSetNo = :gameSetNo AND n.npcJob = 'Resident' AND (n.npcStatus = 'alive' OR n.npcStatus = 'ALIVE')")
     List<NpcInfo> findAllAliveResidentNpcInfoByGameSetNo(@Param("gameSetNo") Long gameSetNo);
+
+    @Query("SELECT new com.server.bearmurderermulti.domain.dto.scenario.LivingCharacters(n.npcName) FROM GameNpc n WHERE n.gameSet.gameSetNo = :gameSetNo AND n.npcJob = 'Resident' AND (n.npcStatus = 'alive' OR n.npcStatus = 'ALIVE')")
+    List<LivingCharacters> findAllAliveResidentLivingCharactersByGameSetNo(@Param("gameSetNo") Long gameSetNo);
 
     @Query(value = "SELECT npc_name FROM bearmurderermulti.game_npc_tb WHERE game_set_no = :gameSetNo AND npc_job = 'Murderer'", nativeQuery = true)
     String findMurderByGameSetNo(@Param("gameSetNo") Long gameSetNo);

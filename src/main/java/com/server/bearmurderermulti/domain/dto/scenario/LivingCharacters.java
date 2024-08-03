@@ -9,8 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MakeScenarioRequest {
+public class LivingCharacters {
 
-    private Long gameSetNo;
+    private String name;
 
 }
