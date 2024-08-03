@@ -76,11 +76,9 @@ public class InterrogationService {
         return response;
     }
 
-    public InterrogationProceedResponse interrogationProceed (InterrogationProceedRequest request, Member loginMember, HttpServletRequest httpServletRequest) throws JsonProcessingException {
+    public InterrogationProceedResponse interrogationProceed (InterrogationProceedRequest request) throws JsonProcessingException {
 
         log.info("🐻Interrogation conversation 시작");
-
-        validateUser(loginMember, httpServletRequest);
 
         GameSet gameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo())
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));

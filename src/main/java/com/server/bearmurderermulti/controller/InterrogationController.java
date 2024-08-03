@@ -36,11 +36,9 @@ public class InterrogationController {
     }
 
     @PostMapping("/proceed")
-    public Response<InterrogationProceedResponse> proceedInterrogation(@RequestBody InterrogationProceedRequest request, @AuthenticationPrincipal CustomUserDetails userDetails, HttpServletRequest httpServletRequest) throws JsonProcessingException {
+    public Response<InterrogationProceedResponse> proceedInterrogation(@RequestBody InterrogationProceedRequest request) throws JsonProcessingException {
 
-        Member loginMember = userDetails.getMember();
-
-        InterrogationProceedResponse response = interrogationService.interrogationProceed(request, loginMember, httpServletRequest);
+        InterrogationProceedResponse response = interrogationService.interrogationProceed(request);
         return Response.success(response);
     }
 
