@@ -2,6 +2,7 @@ package com.server.bearmurderermulti.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.server.bearmurderermulti.configuration.jwt.JwtProvider;
 import com.server.bearmurderermulti.domain.dto.interrogation.InterrogationProceedRequest;
 import com.server.bearmurderermulti.domain.dto.interrogation.InterrogationProceedResponse;
@@ -50,7 +51,6 @@ public class InterrogationService {
         String aiServerUrl =  aiUrl + "/api/v2/interrogation/new";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
 
-
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", request.getGameSetNo());
         requestData.put("npcName", request.getNpcName());
@@ -91,19 +91,20 @@ public class InterrogationService {
         String aiServerUrl =  aiUrl + "/api/v2/interrogation/conversation";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
 
-        Map<String, Object> requestData = new HashMap<>();
-        requestData.put("gameNo", request.getGameSetNo());
-        requestData.put("npcName", request.getNpcName());
-        requestData.put("content", request.getContent());
-
         ObjectMapper objectMapper = new ObjectMapper();
-        String jsonRequest = objectMapper.writeValueAsString(requestData);
-        log.info("🐻jsonRequest : {}", jsonRequest);
+        ObjectNode jsonRequest = objectMapper.createObjectNode();
+        jsonRequest.put("gameNo", request.getGameSetNo());
+        jsonRequest.put("npcName", request.getNpcName());
+        jsonRequest.put("content", request.getContent());
+
+        String jsonRequestStr = objectMapper.writeValueAsString(jsonRequest);
+        log.info("🐻jsonRequest : {}", jsonRequestStr);
 
         InterrogationProceedResponse response = webClient
                 .post()
                 .uri(aiServerUrl)
                 .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(jsonRequestStr))
                 .retrieve()
                 .bodyToMono(InterrogationProceedResponse.class)
                 .block();
