@@ -51,7 +51,7 @@ public class ScenarioService {
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
         // AI에게 시나리오 생성 요청보내는 로직
-        List<LivingCharacters> aliveGameNpcList = gameNpcRepository.findAllAliveResidentLivingCharactersByGameSetNo(foundGameSet.getGameSetNo());
+        List<LivingCharacters> aliveGameNpcList = gameNpcRepository.findAllLivingCharactersByGameSetNo(foundGameSet.getGameSetNo());
 
         String url =  aiUrl + "/api/v2/new-game/next_day";
 
