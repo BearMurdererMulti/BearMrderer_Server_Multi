@@ -50,28 +50,14 @@ public class ScenarioService {
         GameSet foundGameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
-        String secretKey = "mafia";
-        request.setSecretKey(secretKey);
-
         // AI에게 시나리오 생성 요청보내는 로직
-        List<NpcInfo> aliveGameNpcList = gameNpcRepository.findAllAliveResidentNpcInfoByGameSetNo(foundGameSet.getGameSetNo());
-        String murderName = gameNpcRepository.findMurderByGameSetNo(foundGameSet.getGameSetNo());
-        log.info("🤖 머더러 이름 : {}", murderName);
-        log.info("🤖 secret key : {}", request.getSecretKey());
-        int day = foundGameSet.getGameDay();
-        log.info("🤖 day : {} 일차", day);
-        String previousStory = foundGameSet.getGameSummary();
-        log.info("🤖 previousStory : {} ", previousStory);
+        List<LivingCharacters> aliveGameNpcList = gameNpcRepository.findAllAliveResidentLivingCharactersByGameSetNo(foundGameSet.getGameSetNo());
 
-        String url =  aiUrl + "/api/v1/scenario/victim";
+        String url =  aiUrl + "/api/v2/new-game/next_day";
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());
-        requestData.put("secretKey", request.getSecretKey());
-        requestData.put("day", day);
-        requestData.put("murderer", murderName);
         requestData.put("livingCharacters", aliveGameNpcList);
-        requestData.put("previousStory", previousStory);
 
         ObjectMapper objectMapper = new ObjectMapper();
 
