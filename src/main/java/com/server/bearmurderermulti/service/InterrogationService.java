@@ -7,7 +7,6 @@ import com.server.bearmurderermulti.domain.dto.interrogation.InterrogationProcee
 import com.server.bearmurderermulti.domain.dto.interrogation.InterrogationProceedResponse;
 import com.server.bearmurderermulti.domain.dto.interrogation.InterrogationStartRequest;
 import com.server.bearmurderermulti.domain.dto.interrogation.InterrogationStartResponse;
-import com.server.bearmurderermulti.domain.dto.scenario.AiMakeScenarioResponse;
 import com.server.bearmurderermulti.domain.entity.GameSet;
 import com.server.bearmurderermulti.domain.entity.Interrogation;
 import com.server.bearmurderermulti.domain.entity.Member;
