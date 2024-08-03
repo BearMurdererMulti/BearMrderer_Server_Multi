@@ -31,6 +31,12 @@ public class Interrogation {
     private GameSet gameSet;
 
 
+    // 상태 update
+    public void updateInterrogation(String userQuestion, String answer, Integer heartRate) {
+        this.userQuestion = userQuestion;
+        this.answer = answer;
+        this.heartRate = heartRate;
+    }
 
 
 }

@@ -3,9 +3,10 @@ package com.server.bearmurderermulti.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.server.bearmurderermulti.configuration.jwt.JwtProvider;
+import com.server.bearmurderermulti.domain.dto.interrogation.InterrogationProceedRequest;
+import com.server.bearmurderermulti.domain.dto.interrogation.InterrogationProceedResponse;
 import com.server.bearmurderermulti.domain.dto.interrogation.InterrogationStartRequest;
 import com.server.bearmurderermulti.domain.dto.interrogation.InterrogationStartResponse;
-import com.server.bearmurderermulti.domain.dto.scenario.AiMakeScenarioResponse;
 import com.server.bearmurderermulti.domain.entity.GameSet;
 import com.server.bearmurderermulti.domain.entity.Interrogation;
 import com.server.bearmurderermulti.domain.entity.Member;
@@ -41,25 +42,7 @@ public class InterrogationService {
 
         log.info("🐻Interrogation Start 시작");
 
-        String authHeader = httpServletRequest.getHeader("Authorization");
-
-        if (loginMember == null) {
-            log.error("🐻loginMember is null");
-            throw new AppException(ErrorCode.UNAUTHORIZED);
-        } else {
-            if (loginMember.getNickname() == null) {
-                log.error("🐻loginMember nickname is null");
-                throw new AppException(ErrorCode.UNAUTHORIZED);
-            }
-        }
-
-        // 토큰 유효성 검사 결과 출력
-        boolean isValid = jwtProvider.validateToken(authHeader);
-        log.info("🐻Token validation result: {}", isValid);
-
-        if (!isValid) {
-            throw new AppException(ErrorCode.UNAUTHORIZED);
-        }
+       validateUser(loginMember, httpServletRequest);
 
         GameSet gameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo())
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
@@ -92,5 +75,70 @@ public class InterrogationService {
 
         return response;
     }
+
+    public InterrogationProceedResponse interrogationProceed (InterrogationProceedRequest request, Member loginMember, HttpServletRequest httpServletRequest) throws JsonProcessingException {
+
+        log.info("🐻Interrogation conversation 시작");
+
+        validateUser(loginMember, httpServletRequest);
+
+        GameSet gameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo())
+                .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
+
+        Interrogation interrogation = interrogationRepository.findByGameSetAndNpcName(gameSet, request.getNpcName())
+                .orElseThrow(() -> new AppException(ErrorCode.INTERROGATION_NOT_FOUND));
+
+        String aiServerUrl =  aiUrl + "/api/v2/interrogation/conversation";
+        WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
+
+        Map<String, Object> requestData = new HashMap<>();
+        requestData.put("gameNo", request.getGameSetNo());
+        requestData.put("npcName", request.getNpcName());
+        requestData.put("content", request.getContent());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonRequest = objectMapper.writeValueAsString(requestData);
+        log.info("🐻jsonRequest : {}", jsonRequest);
+
+        InterrogationProceedResponse response = webClient
+                .post()
+                .uri(aiServerUrl)
+                .contentType(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(InterrogationProceedResponse.class)
+                .block();
+
+        interrogation.updateInterrogation(request.getContent(), response.getResponse(), response.getHeartRate());
+        interrogationRepository.save(interrogation);
+
+        log.info("🐻Interrogation conversation 종료");
+
+        return response;
+
+    }
+
+    private void validateUser(Member loginMember, HttpServletRequest httpServletRequest) {
+
+        String authHeader = httpServletRequest.getHeader("Authorization");
+
+        if (loginMember == null) {
+            log.error("🐻loginMember is null");
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        } else {
+            if (loginMember.getNickname() == null) {
+                log.error("🐻loginMember nickname is null");
+                throw new AppException(ErrorCode.UNAUTHORIZED);
+            }
+        }
+
+        boolean isValid = jwtProvider.validateToken(authHeader);
+        log.info("🐻Token validation result: {}", isValid);
+
+        if (!isValid) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+    }
+
+
 
 }
