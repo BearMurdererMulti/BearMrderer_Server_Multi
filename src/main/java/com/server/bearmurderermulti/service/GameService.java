@@ -406,6 +406,7 @@ public class GameService {
                 .bodyValue(aiRequest) // 요청 본문 설정
                 .retrieve()
                 .bodyToMono(GameEndingLetterResponse.class)
+                .doOnNext(response -> log.info("🐻Received response from AI server: {}", response))
                 .onErrorResume(e -> {
                     log.error("🐻AI 통신 실패 : ", e);
                     throw new AppException(ErrorCode.AI_INTERNAL_SERVER_ERROR);
