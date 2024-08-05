@@ -253,7 +253,7 @@ public class GameService {
             // 투표 결과가 FOUND인 경우 게임 종료 및 성공
             if (VoteResult.valueOf(request.getVoteResult()) == VoteResult.FOUND) {
                 gameSet.endGameStatus();
-                gameSet.gameSuccess();
+                gameSet.gameWin();
             }
         }
 
@@ -371,7 +371,7 @@ public class GameService {
         log.info("🐻종료 요청 게임 상태 : {}", gameSet.getGameStatus());
 
         if ("FAILURE".equals(request.getResultMessage())) {
-            gameSet.gameFailed();
+            gameSet.gameLose();
         } else {
             throw new AppException(ErrorCode.INVALID_RESULT_MESSAGE);
         }
@@ -379,6 +379,43 @@ public class GameService {
         log.info("🐻Game End 완료");
 
         return new EndGameResponse(request.getResultMessage());
+    }
+
+    public GameEndingLetterResponse gameEndingLetter(Member loginMember, GameEndingLetterRequest request) {
+
+        GameSet gameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
+                .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
+
+        request.setGameResult(gameSet.getGameResult());
+
+        String aiServerUrl = aiUrl + "/api/v2/new-game/end_game";
+        WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
+
+        AIGameEndingLetterRequest aiRequest = AIGameEndingLetterRequest.create(
+                request.getGameSetNo(),
+                request.getGameResult().name()
+        );
+
+        // 요청 객체 로그 출력
+        log.info("🐻Sending request to AI server: {}", aiRequest);
+
+        // AI 서버로 요청
+        GameEndingLetterResponse aiResponse = webClient.post()
+                .uri(aiServerUrl) // URI는 baseUrl에 포함됨
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(aiRequest) // 요청 본문 설정
+                .retrieve()
+                .bodyToMono(GameEndingLetterResponse.class)
+                .onErrorResume(e -> {
+                    log.error("🐻AI 통신 실패 : ", e);
+                    throw new AppException(ErrorCode.AI_INTERNAL_SERVER_ERROR);
+                })
+                .block();
+
+        log.info("🐻gameEndingLetter 완료");
+
+        return aiResponse;
+
     }
 
     public GameNpcInfoResponse gameNpcInfo(Member loginMember, GameNpcInfoRequest gameNpcInfoRequest) {

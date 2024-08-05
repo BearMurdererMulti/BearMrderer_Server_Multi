@@ -172,7 +172,7 @@ public class ScenarioService {
         // gameResult 정보 가져오기
         String gameResult = null;
 
-        if (foundGameSet.getGameResult() == GameResult.SUCCESS) {
+        if (foundGameSet.getGameResult() == GameResult.WIN) {
             gameResult = "victory";
         } else {
             throw new AppException(ErrorCode.GAME_NOT_WON);
