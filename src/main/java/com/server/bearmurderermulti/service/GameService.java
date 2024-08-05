@@ -383,7 +383,7 @@ public class GameService {
 
     public GameEndingLetterResponse gameEndingLetter(Member loginMember, GameEndingLetterRequest request) {
 
-        GameSet gameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
+        GameSet gameSet = gameSetRepository.findEndedGameSetByMemberAndGameSetNo(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
         request.setGameResult(gameSet.getGameResult());
