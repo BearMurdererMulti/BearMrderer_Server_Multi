@@ -123,7 +123,7 @@ public class GameService {
 
 
     @Transactional
-    public StartGameResponse startGame(Member loginMember) {
+    public StartGameResponse startGame(Member loginMember, StartGameRequest request) {
 
         log.info("🐻Game Start 시작");
 
@@ -137,6 +137,9 @@ public class GameService {
 
         log.info("🤖 계정명 : " + loginMember.getAccount());
 
+        Member participant = memberRepository.findByNickname(request.getParticipantNickname())
+                .orElseThrow(() -> new AppException(ErrorCode.MEMBER_NOT_FOUND));
+
         // Game Set 구성
         GameSet gameSet = GameSet.builder()
                 .gameStatus(GameStatus.GAME_START)
@@ -144,7 +147,8 @@ public class GameService {
                 .gameDay(1)
                 .gameSummary("")
                 .gameToken(0)
-                .member(loginMember)
+                .host(loginMember)
+                .participant(participant)
                 .build();
 
         GameSet savedGameSet = gameSetRepository.saveAndFlush(gameSet);
