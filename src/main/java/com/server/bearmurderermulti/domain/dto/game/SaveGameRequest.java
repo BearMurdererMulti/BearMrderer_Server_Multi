@@ -19,7 +19,7 @@ public class SaveGameRequest {
     private Long gameSetNo;
     private int gameDay;
     private String voteNpcName;
-    private String voteResult;
+    private boolean voteResult;
     private Long voteNightNumber;
     private List<CheckListRequest> checkList;
     private GameUserCustomSaveRequest userCustom;

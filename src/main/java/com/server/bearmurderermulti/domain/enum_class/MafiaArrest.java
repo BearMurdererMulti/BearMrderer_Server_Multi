@@ -1,6 +1,6 @@
 package com.server.bearmurderermulti.domain.enum_class;
 
-public enum VoteResult {
+public enum MafiaArrest {
 
     FOUND, NOTFOUND;
 }
