@@ -15,7 +15,7 @@ import com.server.bearmurderermulti.domain.dto.scenario.MakeScenarioResponse;
 import com.server.bearmurderermulti.domain.entity.*;
 import com.server.bearmurderermulti.domain.enum_class.GameResult;
 import com.server.bearmurderermulti.domain.enum_class.GameStatus;
-import com.server.bearmurderermulti.domain.enum_class.VoteResult;
+import com.server.bearmurderermulti.domain.enum_class.MafiaArrest;
 import com.server.bearmurderermulti.exception.AppException;
 import com.server.bearmurderermulti.exception.ErrorCode;
 import com.server.bearmurderermulti.repository.*;
@@ -32,7 +32,6 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -235,29 +234,41 @@ public class GameService {
         GameSet gameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
+        MafiaArrest mafiaArrest = MafiaArrest.NOTFOUND;
+
         // 투표가 이루어진 경우에만 투표 이벤트 처리
-        if (request.getVoteNpcName() != null && request.getVoteResult() != null && request.getVoteNightNumber() != 0) {
+        if (request.getVoteNpcName() != null && request.isVoteResult() && request.getVoteNightNumber() != 0) {
             // 투표된 NPC 찾기
             GameNpc voteGameNpc = gameNpcRepository.findByNpcNameAndGameSet(request.getVoteNpcName(), gameSet)
                     .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
             log.info("🐻투표된 npc : {}", voteGameNpc);
 
-            // NPC 상태 dead로 변경
-            voteGameNpc.voteEvent();
+            // 취조 후 검거했을 경우, NPC 상태 DEAD로 변경
+            if (request.isVoteResult()) {
+                voteGameNpc.voteEvent();
 
-            // 투표 이벤트 생성 및 저장
-            GameVoteEvent gameVoteEvent = new GameVoteEvent(request, gameSet);
-            gameVoteEventRepository.save(gameVoteEvent);
+                // 범인 여부를 확인
+                mafiaArrest = checkMafia(voteGameNpc, request.getGameSetNo());
 
-            log.info("🐻투표 이벤트 저장 No : {}", gameVoteEvent.getGameVoteEventNo());
-            log.info("🐻투표 이벤트 저장 지목 npc : {}", gameVoteEvent.getVoteNpcName());
-            log.info("🐻투표 이벤트 저장 투표 결과 : {}", gameVoteEvent.getVoteResult());
+                // 투표 이벤트 생성 및 저장
+                GameVoteEvent gameVoteEvent = new GameVoteEvent(request, gameSet);
+                gameVoteEvent.updateMafiaArrest(mafiaArrest);
+                gameVoteEventRepository.save(gameVoteEvent);
 
-            // 투표 결과가 FOUND인 경우 게임 종료 및 성공
-            if (VoteResult.valueOf(request.getVoteResult()) == VoteResult.FOUND) {
-                gameSet.endGameStatus();
-                gameSet.gameWin();
+                log.info("🐻투표 이벤트 저장 No : {}", gameVoteEvent.getGameVoteEventNo());
+                log.info("🐻투표 이벤트 저장 지목 npc : {}", gameVoteEvent.getVoteNpcName());
+                log.info("🐻투표 이벤트 저장 투표 결과 : {}", gameVoteEvent.isVoteResult());
+
+                if (mafiaArrest == MafiaArrest.FOUND) {
+                    // 범인 발견 시 게임 종료 및 승리 처리
+                    gameSet.endGameStatus();
+                    gameSet.gameWin();
+                }
+
+            }else {
+                // 투표 결과가 false 일 경우, NPC 상태를 변경 X
+                log.info("🐻투표 결과가 false 이므로, NPC 상태를 변경하지 않습니다.");
             }
         }
 
@@ -289,7 +300,18 @@ public class GameService {
 
         log.info("🐻 Game Save 완료");
 
-        return new SaveGameResponse(gameSet);
+        return new SaveGameResponse(gameSet, mafiaArrest);
+    }
+
+    public MafiaArrest checkMafia(GameNpc voteGameNpc, Long gameSetNo) {
+
+        String murdererName = gameNpcRepository.findMurderByGameSetNo(gameSetNo);
+
+        if (voteGameNpc.getNpcName().equals(murdererName)) {
+            return MafiaArrest.FOUND;
+        } else {
+            return MafiaArrest.NOTFOUND;
+        }
     }
 
     public LoadGameResponse gameLoad(Member loginMember, Long gameSetNo) {
