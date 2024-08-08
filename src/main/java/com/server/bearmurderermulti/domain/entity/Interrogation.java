@@ -3,12 +3,15 @@ package com.server.bearmurderermulti.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 @Getter
-@Table(name = "interrogation")
+@Table(name = "interrogation_tb")
 public class Interrogation {
 
     @Id
@@ -20,23 +23,15 @@ public class Interrogation {
 
     private String weapon;
 
-    private String userQuestion;
-
-    private String answer;
-
-    private Integer heartRate;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_set_no")
     private GameSet gameSet;
 
+    @OneToMany(mappedBy = "interrogation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InterrogationDialogue> dialogues = new ArrayList<>();
 
-    // 상태 update
-    public void updateInterrogation(String userQuestion, String answer, Integer heartRate) {
-        this.userQuestion = userQuestion;
-        this.answer = answer;
-        this.heartRate = heartRate;
+    public void addDialogue(InterrogationDialogue dialogue) {
+        dialogues.add(dialogue);
     }
-
 
 }
