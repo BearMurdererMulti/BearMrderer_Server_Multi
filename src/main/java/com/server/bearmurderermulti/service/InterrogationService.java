@@ -10,6 +10,7 @@ import com.server.bearmurderermulti.domain.dto.interrogation.InterrogationStartR
 import com.server.bearmurderermulti.domain.dto.interrogation.InterrogationStartResponse;
 import com.server.bearmurderermulti.domain.entity.GameSet;
 import com.server.bearmurderermulti.domain.entity.Interrogation;
+import com.server.bearmurderermulti.domain.entity.InterrogationDialogue;
 import com.server.bearmurderermulti.domain.entity.Member;
 import com.server.bearmurderermulti.exception.AppException;
 import com.server.bearmurderermulti.exception.ErrorCode;
@@ -107,7 +108,8 @@ public class InterrogationService {
                 .bodyToMono(InterrogationProceedResponse.class)
                 .block();
 
-        interrogation.updateInterrogation(request.getContent(), response.getResponse(), response.getHeartRate());
+        InterrogationDialogue dialogue = InterrogationDialogue.fromRequest(request.getContent(), response.getResponse(), response.getHeartRate(), interrogation);
+        interrogation.addDialogue(dialogue);
         interrogationRepository.save(interrogation);
 
         log.info("🐻Interrogation conversation 종료");

@@ -20,9 +20,6 @@ public class InterrogationStartRequest {
                 .npcName(this.npcName)
                 .weapon(this.weapon)
                 .gameSet(gameSet)
-                .userQuestion(null)
-                .answer(null)
-                .heartRate(null)
                 .build();
     }
 
