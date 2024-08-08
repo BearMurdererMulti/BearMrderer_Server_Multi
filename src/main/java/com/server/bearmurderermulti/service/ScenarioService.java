@@ -76,7 +76,6 @@ public class ScenarioService {
                 .block();
 
         log.info("🐻 result victim : {}", result.getAnswer().getVictim());
-        log.info("🐻 result token : {}", result.getTokens().getTotalTokens());
         log.info("🐻 result dailySummary: {}", result.getAnswer().getDailySummary());
         log.info("🐻 result alibis: {}", result.getAnswer().getAlibis());
 
