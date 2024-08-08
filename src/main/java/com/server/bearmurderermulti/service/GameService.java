@@ -236,6 +236,8 @@ public class GameService {
 
         MafiaArrest mafiaArrest = MafiaArrest.NOTFOUND;
 
+        log.info("🐻 unity request : {}", request);
+
         // 투표가 이루어진 경우에만 투표 이벤트 처리
         if (request.getVoteNpcName() != null && request.isVoteResult() && request.getVoteNightNumber() != 0) {
             // 투표된 NPC 찾기
