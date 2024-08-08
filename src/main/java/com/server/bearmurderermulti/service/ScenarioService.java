@@ -46,9 +46,13 @@ public class ScenarioService {
 
         System.out.println("🐻scenario 요청 시작");
 
+        log.info("🐻request gameSetNo : {}", request.getGameSetNo());
+
         // 일치하는 게임이 없을경우 에러 발생
         GameSet foundGameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
+
+        log.info("🐻foundGameSet : {}", foundGameSet.getGameSetNo());
 
         // AI에게 시나리오 생성 요청보내는 로직
         List<LivingCharacters> aliveGameNpcList = gameNpcRepository.findAllLivingCharactersByGameSetNo(foundGameSet.getGameSetNo());
