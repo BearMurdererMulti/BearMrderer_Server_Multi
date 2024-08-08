@@ -97,9 +97,15 @@ public class ScenarioService {
         // Alibi 정보를 GameAlibi에 저장
         for (AlibiDTO alibiDTO : result.getAnswer().getAlibis()) {
 
-            GameNpc gameNpc = gameNpcRepository.findByGameNpcNo(alibiDTO.getGameNpcNo())
-                    .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+            GameNpc gameNpc;
 
+            if (alibiDTO.getGameNpcNo() != null) {
+                gameNpc = gameNpcRepository.findByGameNpcNo(alibiDTO.getGameNpcNo())
+                        .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+            } else {
+                gameNpc = gameNpcRepository.findByNpcNameAndGameSet_GameSetNo(alibiDTO.getName(), foundGameSet.getGameSetNo())
+                        .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+            }
             // AlibiDTO 정보 확인
             log.info("🐻 AlibiDTO Information: {}", alibiDTO);
 
