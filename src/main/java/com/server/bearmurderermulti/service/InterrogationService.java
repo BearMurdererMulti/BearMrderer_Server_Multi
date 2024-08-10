@@ -87,6 +87,8 @@ public class InterrogationService {
         Interrogation interrogation = interrogationRepository.findByGameSetAndNpcName(gameSet, request.getNpcName())
                 .orElseThrow(() -> new AppException(ErrorCode.INTERROGATION_NOT_FOUND));
 
+        log.info("🐻 unity request : {}", request);
+
         String aiServerUrl =  aiUrl + "/api/v2/interrogation/conversation";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
 
