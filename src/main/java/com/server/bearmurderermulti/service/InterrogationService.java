@@ -81,13 +81,17 @@ public class InterrogationService {
 
         log.info("🐻Interrogation conversation 시작");
 
+        log.info("🐻 unity request : {}", request);
+
         GameSet gameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo())
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
+
+        log.info("🐻 unity request GameSetNo : {}", request.getGameSetNo());
 
         Interrogation interrogation = interrogationRepository.findByGameSetAndNpcName(gameSet, request.getNpcName())
                 .orElseThrow(() -> new AppException(ErrorCode.INTERROGATION_NOT_FOUND));
 
-        log.info("🐻 unity request : {}", request);
+        log.info("🐻 unity request NpcName : {}", request.getNpcName());
 
         String aiServerUrl =  aiUrl + "/api/v2/interrogation/conversation";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
