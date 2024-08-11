@@ -12,4 +12,6 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     Optional<Question> findByGameSet_GameSetNoAndNpcNameAndQuestionIndex(Long gameSetNo, String npcName, Integer questionIndex);
 
+    // 가장 최근의 질문을 찾게끔
+    Optional<Question> findTopByGameSet_GameSetNoAndNpcNameAndQuestionIndexOrderByCreatedAtDesc(Long gameSetNo, String npcName, Integer questionIndex);
 }

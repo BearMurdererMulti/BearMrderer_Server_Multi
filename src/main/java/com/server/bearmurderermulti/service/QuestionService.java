@@ -215,8 +215,8 @@ public class QuestionService {
                 })
                 .block();
 
-        // 질문 조회
-        Question question = questionRepository.findByGameSet_GameSetNoAndNpcNameAndQuestionIndex(
+        // 질문 조회(가장 최근의 질문을 찾도록)
+        Question question = questionRepository.findTopByGameSet_GameSetNoAndNpcNameAndQuestionIndexOrderByCreatedAtDesc(
                 request.getGameSetNo(), request.getNpcName(), request.getQuestionIndex())
                 .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUND));
 
