@@ -36,9 +36,9 @@ public class GameController {
     }
 
     @PostMapping("/start")
-    public ResponseEntity<Response<StartGameResponse>> startGame(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody StartGameRequest request) {
+    public ResponseEntity<Response<StartGameResponse>> startGame(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Member loginMember = customUserDetails.getMember();
-        StartGameResponse response = gameService.startGame(loginMember, request);
+        StartGameResponse response = gameService.startGame(loginMember);
         return ResponseEntity.ok().body(Response.success(response));
     }
 
